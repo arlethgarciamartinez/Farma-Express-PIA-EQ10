@@ -1,0 +1,21 @@
+﻿caso_id,operacion_id,accion_sugerida,estado_inicial,resultado_alumno,instrucciones,evidencia
+FAR-S001,FAR-O001,completar,CREADO,OK estado_final=ENTREGADO,Ejecutar la operacion y registrar evento o excepcion,"eventos=['PedidoValidado', 'PedidoPreparado', 'PedidoEntregado']"
+FAR-S002,FAR-O002,cancelar,CREADO,OK estado_final=CANCELADO,Ejecutar la operacion y registrar evento o excepcion,eventos=['PedidoCancelado']
+FAR-S003,FAR-O003,repetir_aprobacion,CREADO,EXCEPCION TransicionInvalida (409) estado_final=VALIDADO,Ejecutar la operacion y registrar evento o excepcion,No se puede 'validar' un pedido en estado VALIDADO; eventos=['PedidoValidado']
+FAR-S004,FAR-O004,saltar_estado,CREADO,EXCEPCION TransicionInvalida (409) estado_final=CREADO,Ejecutar la operacion y registrar evento o excepcion,No se puede 'entregar' un pedido en estado CREADO; eventos=[]
+FAR-S005,FAR-O005,aprobar,CREADO,EXCEPCION ReglaDeNegocioIncumplida (422) estado_final=CREADO,Ejecutar la operacion y registrar evento o excepcion,El pedido no cumple las precondiciones reglas=['producto_habilitado']; eventos=[]
+FAR-S006,FAR-O006,completar,CREADO,OK estado_final=ENTREGADO,Ejecutar la operacion y registrar evento o excepcion,"eventos=['PedidoValidado', 'PedidoPreparado', 'PedidoEntregado']"
+FAR-S007,FAR-O007,cancelar,CREADO,OK estado_final=CANCELADO,Ejecutar la operacion y registrar evento o excepcion,eventos=['PedidoCancelado']
+FAR-S008,FAR-O008,repetir_aprobacion,CREADO,EXCEPCION ReglaDeNegocioIncumplida (422) estado_final=CREADO,Ejecutar la operacion y registrar evento o excepcion,El pedido no cumple las precondiciones reglas=['autorizacion']; eventos=[]
+FAR-S009,FAR-O009,saltar_estado,CREADO,EXCEPCION TransicionInvalida (409) estado_final=CREADO,Ejecutar la operacion y registrar evento o excepcion,No se puede 'entregar' un pedido en estado CREADO; eventos=[]
+FAR-S010,FAR-O010,aprobar,CREADO,OK estado_final=VALIDADO,Ejecutar la operacion y registrar evento o excepcion,eventos=['PedidoValidado']
+FAR-S011,FAR-O011,completar,CREADO,OK estado_final=ENTREGADO,Ejecutar la operacion y registrar evento o excepcion,"eventos=['PedidoValidado', 'PedidoPreparado', 'PedidoEntregado']"
+FAR-S012,FAR-O012,cancelar,CREADO,OK estado_final=CANCELADO,Ejecutar la operacion y registrar evento o excepcion,eventos=['PedidoCancelado']
+FAR-S013,FAR-O013,repetir_aprobacion,CREADO,EXCEPCION ReglaDeNegocioIncumplida (422) estado_final=CREADO,Ejecutar la operacion y registrar evento o excepcion,El pedido no cumple las precondiciones reglas=['detalle_no_vacio']; eventos=[]
+FAR-S014,FAR-O014,saltar_estado,CREADO,EXCEPCION TransicionInvalida (409) estado_final=CREADO,Ejecutar la operacion y registrar evento o excepcion,No se puede 'entregar' un pedido en estado CREADO; eventos=[]
+FAR-S015,FAR-O015,aprobar,CREADO,EXCEPCION ReglaDeNegocioIncumplida (422) estado_final=CREADO,Ejecutar la operacion y registrar evento o excepcion,El pedido no cumple las precondiciones reglas=['producto_habilitado']; eventos=[]
+FAR-S016,FAR-O016,completar,CREADO,EXCEPCION ReglaDeNegocioIncumplida (422) estado_final=CREADO,Ejecutar la operacion y registrar evento o excepcion,El pedido no cumple las precondiciones reglas=['autorizacion']; eventos=[]
+FAR-S017,FAR-O017,cancelar,CREADO,OK estado_final=CANCELADO,Ejecutar la operacion y registrar evento o excepcion,eventos=['PedidoCancelado']
+FAR-S018,FAR-O018,repetir_aprobacion,CREADO,EXCEPCION TransicionInvalida (409) estado_final=VALIDADO,Ejecutar la operacion y registrar evento o excepcion,No se puede 'validar' un pedido en estado VALIDADO; eventos=['PedidoValidado']
+FAR-S019,FAR-O019,saltar_estado,CREADO,EXCEPCION TransicionInvalida (409) estado_final=CREADO,Ejecutar la operacion y registrar evento o excepcion,No se puede 'entregar' un pedido en estado CREADO; eventos=[]
+FAR-S020,FAR-O020,aprobar,CREADO,EXCEPCION ReglaDeNegocioIncumplida (422) estado_final=CREADO,Ejecutar la operacion y registrar evento o excepcion,El pedido no cumple las precondiciones reglas=['producto_habilitado']; eventos=[]
