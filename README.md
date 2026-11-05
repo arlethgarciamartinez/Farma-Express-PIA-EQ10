@@ -18,7 +18,7 @@ src/farmaexpress/
   infrastructure/  SQLAlchemy, repositorios, UoW, bus de eventos, carga CSV, ejecutor de casos
   api/             FastAPI: routers, schemas, traducción de errores, composition root
 tests/             unit (dominio) · integración (servicios, API, CSV) · arquitectura
-docs/              BRD_final.md · trazabilidad.md · adr/ADR-001…007
+docs/              BRD_final.md · trazabilidad.md · diagramas.md · GUION_DEMO.md · CHECKLIST_ENTREGA.md · adr/ · u2/ · u3/
 scripts/           verificar_trazabilidad.py (referencias de la matriz)
 datos/             CSV del paquete    resultados/            salida del ejecutor de casos
 ```
