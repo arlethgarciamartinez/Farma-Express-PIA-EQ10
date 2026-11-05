@@ -1,11 +1,14 @@
 # FarmaExpress — PIA Componentes de Lógica de Negocios (Equipo 10)
 
+[![CI](https://github.com/arlethgarciamartinez/Farma-Express-PIA-EQ10/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/arlethgarciamartinez/Farma-Express-PIA-EQ10/actions/workflows/ci.yml)
+
 FIME-UANL · Arleth García Martínez, Ángel Mauricio Castruita Márquez, Carlos Patricio Lozano Treviño.
 Sistema de pedidos de farmacia con **DDD + Specification + State Machine + Domain Events**, API REST documentada (OpenAPI),
 PostgreSQL, Docker Compose y CI en GitHub Actions.
 
-> Modelo de negocio: núcleo de **pedidos** del paquete del PIA + reglas del BRD del equipo para medicamentos controlados.
-> Diferencias y alcance: [ADR-005](docs/adr/ADR-005-reconciliacion-modelo-pedido-vs-brd.md).
+> **Requerimientos:** [BRD final v2.0](docs/BRD_final.md) (26 historias con Gherkin, reglas RN-01…RN-09) ·
+> **Trazabilidad:** [BRD → regla → componente → prueba](docs/trazabilidad.md) ·
+> **Alcance y diferencias:** [ADR-005](docs/adr/ADR-005-reconciliacion-modelo-pedido-vs-brd.md) · **Backlog:** BRD §9.6.
 
 ## Arquitectura
 ```
@@ -15,7 +18,8 @@ src/farmaexpress/
   infrastructure/  SQLAlchemy, repositorios, UoW, bus de eventos, carga CSV, ejecutor de casos
   api/             FastAPI: routers, schemas, traducción de errores, composition root
 tests/             unit (dominio) · integración (servicios, API, CSV) · arquitectura
-docs/adr/          ADR-001…007        docs/trazabilidad.md   BRD → regla → componente → prueba
+docs/              BRD_final.md · trazabilidad.md · adr/ADR-001…007
+scripts/           verificar_trazabilidad.py (referencias de la matriz)
 datos/             CSV del paquete    resultados/            salida del ejecutor de casos
 ```
 Flujo del pedido: `CREADO → VALIDADO → PREPARADO → ENTREGADO` · `CREADO → CANCELADO`.

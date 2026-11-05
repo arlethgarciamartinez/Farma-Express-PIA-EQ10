@@ -32,6 +32,8 @@ jobs:
       - run: ruff check .
       - name: Pruebas unitarias e integración (PostgreSQL) con cobertura
         run: pytest --cov-report=xml
+      - name: Verificar trazabilidad BRD ↔ pruebas
+        run: python scripts/verificar_trazabilidad.py
       - name: Ejecutar casos del paquete (CSV)
         run: python -m farmaexpress.infrastructure.ejecutor_casos --datos datos --salida resultados
       - uses: actions/upload-artifact@v4
