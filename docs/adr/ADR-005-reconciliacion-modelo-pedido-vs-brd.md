@@ -15,8 +15,8 @@ El PIA exige derivar la implementación del BRD/BPMN/Gherkin del equipo (U2/U3) 
 
 ## Decisión
 **El BRD se refina (no se reemplaza):** el BRD v2.0 conserva íntegros BN-01…BN-10 y US-01…US-18 y agrega, en su §9,
-el **pedido de farmacia como formalización de la venta en mostrador**: BN-11…BN-14, US-19…US-26 con Gherkin,
-reglas RN-01…RN-09 y supuestos S-1…S-4. Con esto el código **sí se deriva del BRD**: cada regla implementada tiene un ID
+el **pedido de farmacia como formalización de la venta en mostrador**: BN-11…BN-15, US-19…US-27 con Gherkin,
+reglas RN-01…RN-10 y supuestos S-1…S-4. Con esto el código **sí se deriva del BRD**: cada regla implementada tiene un ID
 en el documento y cada ID tiene prueba (`docs/trazabilidad.md`, verificada por `scripts/verificar_trazabilidad.py`).
 
 1. El agregado `Pedido` implementa el flujo y reglas del paquete → ejecuta los 120 casos y 20 transiciones.

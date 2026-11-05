@@ -1,6 +1,6 @@
 # Matriz de trazabilidad: BRD → regla → componente → prueba
 
-Fuente única de IDs: [`BRD_final.md`](BRD_final.md) v2.0 (BN-01…BN-14, US-01…US-26, RN-01…RN-09, S-x, R-x).
+Fuente única de IDs: [`BRD_final.md`](BRD_final.md) v2.0 (BN-01…BN-15, US-01…US-27, RN-01…RN-10, S-x, R-x).
 Las rutas de prueba se verifican automáticamente (ver *Verificación* al final).
 Leyenda: **✔** implementado y probado · **◐** parcial · **—** backlog (BRD §9.6).
 
@@ -21,6 +21,7 @@ Leyenda: **✔** implementado y probado · **◐** parcial · **—** backlog (B
 | BN-12 | Validación previa al proceso | US-20, US-21 | RN-01, RN-03, RN-04, RN-05 | ✔ |
 | BN-13 | Beneficio de referencia | US-23 | RN-02 | ✔ |
 | BN-14 | Bitácora auditable de estados | US-26 | RN-09 | ✔ |
+| BN-15 | Respuestas comprensibles para cualquier persona | US-27 | RN-10 | ✔ |
 
 ## 2. Historias de usuario → componente → prueba
 | US | Regla(s) | Componente (código) | Endpoint | Pruebas |
@@ -33,6 +34,7 @@ Leyenda: **✔** implementado y probado · **◐** parcial · **—** backlog (B
 | US-24 | RN-06 | `Pedido.cancelar`, `PedidoCancelado` | `POST /pedidos/{id}/cancelar` | `test_dominio::test_cancelar_emite_evento` · `test_dominio::test_cancelacion_solo_desde_creado` · `test_servicios::test_cancelar_y_transiciones_invalidas` · `test_casos_csv::test_20_transiciones_con_estado_final_o_excepcion` |
 | US-25 | RN-06, RN-07 | `MaquinaDeEstados`, `TransicionInvalida` | todas las acciones → 409 | `test_dominio::test_matriz_completa_solo_4_transiciones_legales` · `test_dominio::test_transicion_ilegal_tiene_prioridad_sobre_reglas` · `test_dominio::test_no_se_valida_dos_veces` · `test_api::test_409_transicion_invalida` |
 | US-26 | RN-09 | `PublicadorDeEventos`, `SqlEventos`, `BusDeEventosEnMemoria` | `GET /pedidos/{id}/eventos` | `test_servicios::test_eventos_no_se_publican_si_la_operacion_falla` · `test_servicios::test_suscriptor_roto_no_revierte_la_operacion` · `test_api::test_flujo_completo_200` |
+| US-27 | RN-10 | `application/mensajes.py` (`explicar_error`, `explicar_validacion`, `motivos`, `conclusion_*`, `describir_evento`), `api/errores.py`, campos `mensaje`/`que_hacer`/`resumen` en `api/schemas.py` | todas las respuestas | `test_mensajes::test_error_404` · `test_mensajes::test_error_409_saltar_estado` · `test_mensajes::test_error_409_repetir_validacion` · `test_mensajes::test_error_422_explica_cada_motivo` · `test_mensajes::test_error_400_en_espanol` · `test_mensajes::test_json_mal_escrito` · `test_mensajes::test_pedido_trae_resumen_y_siguiente_paso` · `test_mensajes::test_evaluacion_explica_ambas_reglas` · `test_mensajes::test_eventos_con_descripcion` · `test_mensajes::test_los_140_resultados_traen_explicacion_clara` · `test_mensajes::test_todas_las_reglas_conocidas_tienen_texto_claro` |
 
 ## 3. Cobertura de las historias originales (US-01…US-18)
 | US | Estado | Qué hay / qué falta | Pruebas |

@@ -12,6 +12,13 @@ from pathlib import Path
 
 from sqlalchemy.orm import sessionmaker
 
+from farmaexpress.application.mensajes import (
+    conclusion_beneficio,
+    conclusion_procesamiento,
+    describir_estado,
+    dinero,
+    explicar_error,
+)
 from farmaexpress.application.servicios import ServicioPedidos
 from farmaexpress.domain.exceptions import (
     ConflictoDeEstado,
@@ -66,10 +73,13 @@ def ejecutar_casos(servicio: ServicioPedidos, datos: Path) -> list[dict[str, str
         ev = servicio.evaluar(caso["operacion_id"])
         if caso["tipo_prueba"] == "validar_operacion":
             ok, fallos = ev.puede_procesarse, ev.fallos_procesamiento
+            conclusion = conclusion_procesamiento(ok, fallos)
         else:
             ok, fallos = ev.beneficio_referencia, ev.fallos_beneficio
+            conclusion = conclusion_beneficio(ok, fallos)
         caso["resultado_alumno"] = "TRUE" if ok else "FALSE"
         caso["evidencia"] = f"total={ev.total} MXN; reglas_incumplidas={fallos or 'ninguna'}"
+        caso["explicacion"] = f"Pedido {ev.pedido_id} (total {dinero(ev.total)}). {conclusion}"
         salida.append(caso)
     return salida
 
@@ -78,19 +88,26 @@ def ejecutar_transiciones(servicio: ServicioPedidos, datos: Path) -> list[dict[s
     salida = []
     for caso in leer_csv(datos / "transiciones_prueba.csv"):
         pid, accion = caso["operacion_id"], caso["accion_sugerida"]
+        inicial = servicio.obtener(pid).estado
         try:
             for paso in SECUENCIAS[accion]:
                 getattr(servicio, paso)(pid)
-            resultado = f"OK estado_final={servicio.obtener(pid).estado.value}"
+            final = servicio.obtener(pid).estado
+            caso["resultado_alumno"] = f"OK estado_final={final.value}"
+            caso["evidencia"] = f"eventos={[e['evento'] for e in servicio.eventos_de(pid)]}"
+            caso["explicacion"] = f"Todo salió bien con el pedido {pid}: ahora está {describir_estado(final)}."
         except ErrorDeDominio as exc:
-            resultado = f"EXCEPCION {type(exc).__name__} ({_codigo_http(exc)}) estado_final={servicio.obtener(pid).estado.value}"
+            final = servicio.obtener(pid).estado
+            caso["resultado_alumno"] = f"EXCEPCION {type(exc).__name__} ({_codigo_http(exc)}) estado_final={final.value}"
             detalle = f"{exc}" + (f" reglas={exc.fallos}" if getattr(exc, "fallos", None) else "")
-            caso["resultado_alumno"] = resultado
             caso["evidencia"] = f"{detalle}; eventos={[e['evento'] for e in servicio.eventos_de(pid)]}"
-            salida.append(caso)
-            continue
-        caso["resultado_alumno"] = resultado
-        caso["evidencia"] = f"eventos={[e['evento'] for e in servicio.eventos_de(pid)]}"
+            ex = explicar_error(exc)
+            avance = (
+                f" El pedido avanzó hasta {describir_estado(final)} y ahí se detuvo." if final != inicial else ""
+            )
+            caso["explicacion"] = (
+                f"No se pudo completar la acción en el pedido {pid}. {ex.mensaje}{avance} {ex.que_hacer}"
+            )
         salida.append(caso)
     return salida
 

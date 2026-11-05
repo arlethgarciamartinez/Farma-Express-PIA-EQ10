@@ -46,6 +46,12 @@ class PedidoDuplicado(ConflictoDeEstado):
     pass
 
 
+class PedidoNoEditable(ConflictoDeEstado):
+    def __init__(self, estado: str) -> None:
+        super().__init__(f"Sólo se editan pedidos CREADO (actual: {estado})")
+        self.estado = estado
+
+
 class ReglaDeNegocioIncumplida(ErrorDeDominio):
     """Se cumplen los datos y el estado, pero no una regla de negocio. -> 422"""
 

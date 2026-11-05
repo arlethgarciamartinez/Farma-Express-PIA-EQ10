@@ -7,6 +7,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Request
 
 from farmaexpress.application.consultas import ServicioCatalogo
+from farmaexpress.application.mensajes import (
+    conclusion_beneficio,
+    conclusion_procesamiento,
+    describir_evento,
+    motivos,
+)
 from farmaexpress.application.servicios import CrearPedido, LineaSolicitada, ServicioPedidos
 
 from .schemas import (
@@ -33,7 +39,7 @@ Pedidos = Annotated[ServicioPedidos, Depends(_servicio)]
 Catalogo = Annotated[ServicioCatalogo, Depends(_catalogo)]
 
 _ERRORES = {
-    400: {"model": ErrorOut, "description": "Datos inválidos (p. ej. cantidad <= 0)"},
+    400: {"model": ErrorOut, "description": "Datos inválidos (p. ej. cantidad <= 0), explicados en lenguaje claro"},
     404: {"model": ErrorOut, "description": "Recurso inexistente"},
     409: {"model": ErrorOut, "description": "Transición de estado inválida"},
     422: {"model": ErrorOut, "description": "Regla de negocio incumplida"},
@@ -95,12 +101,19 @@ _accion("cancelar", "CREADO -> CANCELADO")
 
 @pedidos.get("/{pedido_id}/evaluacion", response_model=EvaluacionOut, summary="Evalúa las Specifications")
 def evaluacion(pedido_id: str, svc: Pedidos) -> EvaluacionOut:
-    return EvaluacionOut(**svc.evaluar(pedido_id).__dict__)
+    ev = svc.evaluar(pedido_id)
+    return EvaluacionOut(
+        conclusion_procesamiento=conclusion_procesamiento(ev.puede_procesarse, ev.fallos_procesamiento),
+        conclusion_beneficio=conclusion_beneficio(ev.beneficio_referencia, ev.fallos_beneficio),
+        motivos_no_procesable=motivos(ev.fallos_procesamiento),
+        motivos_sin_beneficio=motivos(ev.fallos_beneficio),
+        **ev.__dict__,
+    )
 
 
 @pedidos.get("/{pedido_id}/eventos", response_model=list[EventoOut], summary="Domain Events del pedido")
 def eventos(pedido_id: str, svc: Pedidos) -> list[EventoOut]:
-    return [EventoOut(**e) for e in svc.eventos_de(pedido_id)]
+    return [EventoOut(descripcion=describir_evento(e["evento"], e["datos"]), **e) for e in svc.eventos_de(pedido_id)]
 
 
 # --------------------------------------------------------------- catálogo

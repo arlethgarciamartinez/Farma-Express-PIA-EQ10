@@ -9,3 +9,4 @@
 | [005](ADR-005-reconciliacion-modelo-pedido-vs-brd.md) | Reconciliar el modelo de pedidos del paquete con el BRD del equipo | Aceptada, resuelta por BRD v2.0 |
 | [006](ADR-006-contrato-http-de-errores.md) | Contrato de códigos HTTP 200/201/400/404/409/422 | Aceptada |
 | [007](ADR-007-persistencia-y-entorno.md) | PostgreSQL + SQLAlchemy; SQLite sólo en pruebas locales; 12-Factor | Aceptada |
+| [008](ADR-008-mensajes-en-lenguaje-claro.md) | Mensajes en lenguaje claro para cualquier persona (qué pasó, por qué, qué hacer) | Aceptada |

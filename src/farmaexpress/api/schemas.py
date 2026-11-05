@@ -6,6 +6,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from farmaexpress.application.mensajes import resumen_pedido, siguiente_paso
 from farmaexpress.domain.entities import Comprador, Producto
 from farmaexpress.domain.pedido import Pedido
 from farmaexpress.domain.state_machine import MAQUINA_PEDIDO
@@ -40,6 +41,8 @@ class LineaOut(BaseModel):
 
 
 class PedidoOut(BaseModel):
+    resumen: str = Field(description="Explicación en lenguaje claro del estado del pedido")
+    siguiente_paso: str = Field(description="Qué se puede hacer ahora con este pedido")
     id: str
     comprador_id: str
     estado: str
@@ -55,6 +58,8 @@ class PedidoOut(BaseModel):
     @classmethod
     def desde(cls, p: Pedido) -> PedidoOut:
         return cls(
+            resumen=resumen_pedido(p),
+            siguiente_paso=siguiente_paso(p.estado),
             id=p.id,
             comprador_id=p.comprador_id,
             estado=p.estado.value,
@@ -78,6 +83,10 @@ class PedidoOut(BaseModel):
 
 
 class EvaluacionOut(BaseModel):
+    conclusion_procesamiento: str = Field(description="¿Se puede procesar el pedido? Con el porqué")
+    conclusion_beneficio: str = Field(description="¿Aplica el beneficio de cliente preferente? Con el porqué")
+    motivos_no_procesable: list[str]
+    motivos_sin_beneficio: list[str]
     pedido_id: str
     total: Decimal
     puede_procesarse: bool
@@ -87,6 +96,7 @@ class EvaluacionOut(BaseModel):
 
 
 class EventoOut(BaseModel):
+    descripcion: str = Field(description="Qué ocurrió, en lenguaje claro")
     evento: str
     ocurrido_en: str
     datos: dict
@@ -125,6 +135,9 @@ class ProductoOut(BaseModel):
 
 
 class ErrorOut(BaseModel):
-    codigo: str
-    detalle: str
-    reglas_incumplidas: list[str] = Field(default_factory=list)
+    mensaje: str = Field(description="Qué pasó y por qué, en lenguaje claro")
+    que_hacer: str = Field(description="Qué puede hacer la persona para resolverlo")
+    motivos: list[str] = Field(default_factory=list, description="Cada motivo del rechazo, en una frase")
+    codigo: str = Field(description="Código técnico estable (para programadores)")
+    detalle: str = Field(description="Detalle técnico (para programadores)")
+    reglas_incumplidas: list[str] = Field(default_factory=list, description="Nombres técnicos de las reglas")

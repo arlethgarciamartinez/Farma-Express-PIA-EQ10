@@ -12,5 +12,6 @@
 | 422 | Datos y estado correctos pero una regla de negocio falla (inactivo, sin autorización, sin stock, producto deshabilitado, receta vencida) | `ReglaDeNegocioIncumplida` | `REGLA_DE_NEGOCIO` + `reglas_incumplidas[]` |
 
 Precedencia: **400 → 404 → 409 → 422**. FastAPI devuelve 422 por defecto en validación de esquema; se sobreescribe a
-400 para reservar 422 a las reglas de negocio. El cuerpo de error siempre es `{codigo, detalle, reglas_incumplidas}`
-(`ErrorOut`), documentado en OpenAPI para cada endpoint.
+400 para reservar 422 a las reglas de negocio. El cuerpo de error siempre es `{mensaje, que_hacer, motivos, codigo, detalle, reglas_incumplidas}`
+(`ErrorOut`), documentado en OpenAPI para cada endpoint. `mensaje`, `que_hacer` y `motivos` están en lenguaje claro
+(ADR-008); `codigo`, `detalle` y `reglas_incumplidas` son técnicos y estables.

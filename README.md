@@ -6,7 +6,7 @@ FIME-UANL · Arleth García Martínez, Ángel Mauricio Castruita Márquez, Carlo
 Sistema de pedidos de farmacia con **DDD + Specification + State Machine + Domain Events**, API REST documentada (OpenAPI),
 PostgreSQL, Docker Compose y CI en GitHub Actions.
 
-> **Requerimientos:** [BRD final v2.0](docs/BRD_final.md) (26 historias con Gherkin, reglas RN-01…RN-09) ·
+> **Requerimientos:** [BRD final v2.0](docs/BRD_final.md) (27 historias con Gherkin, reglas RN-01…RN-10) ·
 > **Trazabilidad:** [BRD → regla → componente → prueba](docs/trazabilidad.md) ·
 > **Alcance y diferencias:** [ADR-005](docs/adr/ADR-005-reconciliacion-modelo-pedido-vs-brd.md) · **Backlog:** BRD §9.6.
 
@@ -63,6 +63,7 @@ Genera `resultados/casos_prueba_resultado.csv` y `transiciones_resultado.csv` co
 | `GET /compradores`, `/productos` (+ `/{id}`) | catálogo |
 
 Errores: 400 datos inválidos · 404 no existe · 409 transición inválida · 422 regla de negocio ([ADR-006](docs/adr/ADR-006-contrato-http-de-errores.md)).
+Cada respuesta trae un `mensaje`, `que_hacer` o `resumen` **en lenguaje claro**, comprensible sin conocer el proyecto ([ADR-008](docs/adr/ADR-008-mensajes-en-lenguaje-claro.md)).
 
 ## Calidad
 Cobertura actual ≈ 98 % (mínimo exigido 80 %, forzado en `pyproject.toml` y en CI). CI: `.github/workflows/ci.yml`.

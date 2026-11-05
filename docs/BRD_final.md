@@ -5,7 +5,7 @@
 | **Curso** | Componentes de Lógica de Negocios · FIME-UANL · Producto Integrador de Aprendizaje |
 | **Equipo 10** | Arleth García Martínez (2145524) · Ángel Mauricio Castruita Márquez (2146281) · Carlos Patricio Lozano Treviño (2147049) |
 | **Versión** | 2.0 (final para PIA) · 04/11/26 · sustituye al BRD v1 del 04/09/26 |
-| **Qué cambió** | Se conservan **sin modificar** todos los IDs de v1 (BN-01…BN-10, US-01…US-18). Se **agrega** el §9 "Incremento PIA" con BN-11…BN-14, US-19…US-26 y reglas RN-01…RN-09. |
+| **Qué cambió** | Se conservan **sin modificar** todos los IDs de v1 (BN-01…BN-10, US-01…US-18). Se **agrega** el §9 "Incremento PIA" con BN-11…BN-15, US-19…US-27 y reglas RN-01…RN-10. |
 
 > **Cómo leer este documento.** Las secciones 1–8 son el BRD v1 del equipo, íntegro. La sección 9 es el refinamiento
 > exigido por el PIA ("integrar y refinar los productos previos"): define el **pedido de farmacia** como la formalización
@@ -126,6 +126,7 @@ con sus reglas, estados, eventos y API. Se eligió porque es el eje que conecta 
 | Venta formalizada, validación de existencia y autorización (US-01, US-04) | **Sí** (BN-11, BN-12) |
 | Receta vigente ≤ 30 días en controlados (US-03) | **Parcial** (vigencia; no datos completos) |
 | Pedido con estados, cancelación y auditoría | **Sí** (BN-11, BN-14) |
+| Respuestas comprensibles para cualquier persona | **Sí** (BN-15) |
 | Beneficio comercial de referencia | **Sí** (BN-13) |
 | Lotes, caducidad, retiros (BN-02, BN-05, BN-06) · resurtido (BN-03, BN-04) · sustitución · transferencias · conteo · reportes | **No — backlog** (§9.6) |
 
@@ -136,6 +137,7 @@ con sus reglas, estados, eventos y API. Se eligió porque es el eje que conecta 
 | BN-12 | Validar antes de procesar un pedido: comprador activo, detalle no vacío, autorización, productos habilitados y existencia suficiente; y, en controlados, receta vigente y autorización por límite. | BN-01, BN-10, US-01, US-03, US-04 |
 | BN-13 | Identificar los pedidos con **beneficio de referencia**: comprador preferente, total ≥ $1,500 MXN y sin promoción activa. | Criterio comercial (supuesto S-1) |
 | BN-14 | Dejar registro auditable de cada cambio de estado del pedido (quién/qué/cuándo) para reportes y para disparar procesos posteriores (p. ej. resurtido). | Criterios de éxito; US-12 |
+| BN-15 | Que **toda respuesta del sistema** (éxito, rechazo o error) la entienda cualquier persona, aunque no conozca el proyecto: qué pasó, por qué y qué puede hacer. | US-03 ("mostrar el motivo del rechazo"); criterio de calidad de la revisión |
 
 ## 9.3 Supuestos y restricciones del incremento
 | ID | Supuesto / restricción | Estado |
@@ -159,6 +161,7 @@ con sus reglas, estados, eventos y API. Se eligió porque es el eje que conecta 
 | RN-07 | Precedencia de errores: dato inválido (400) → inexistente (404) → transición ilegal (409) → regla de negocio (422). | `api/errores.py`, `Pedido.validar/preparar` |
 | RN-08 | Importe = Σ(precio × cantidad) con precisión de centavos; el precio de cada línea es el del catálogo al momento de agregarla. | `Dinero`, `Cantidad`, `LineaPedido` |
 | RN-09 | Cada cambio de estado emite un evento de dominio, se guarda con el pedido en la misma transacción y se publica sólo tras confirmar. | `events.py`, `ServicioPedidos._persistir` |
+| RN-10 | Toda respuesta incluye un **mensaje en español claro** que dice *qué pasó*, *por qué* y *qué hacer*, sin nombres técnicos (reglas, códigos, clases); los códigos técnicos se conservan aparte para programadores. | `application/mensajes.py`, `api/errores.py`, `api/schemas.py` |
 
 ```mermaid
 stateDiagram-v2
@@ -172,7 +175,7 @@ stateDiagram-v2
 ```
 
 ## 9.5 Historias de usuario nuevas (Gherkin)
-Se suman a las 18 del §8: **26 historias en total** (el PIA pide ≥ 15).
+Se suman a las 18 del §8: **27 historias en total** (el PIA pide ≥ 15).
 
 **US-19 — Registrar un pedido.** Como *Cajero*, quiero registrar un pedido a nombre de un comprador con sus productos y cantidades, para formalizar la venta con un total calculado.
 ```gherkin
@@ -285,6 +288,32 @@ Escenario: Sin eventos fantasma
   Dado una operación que falló por una regla de negocio
   Cuando consulto los eventos
   Entonces no aparece ningún evento de esa operación fallida
+```
+
+**US-27 — Entender cualquier respuesta sin conocimientos técnicos.** Como *Cliente o Cajero*, quiero que cada respuesta del sistema me diga con palabras sencillas qué pasó, por qué y qué puedo hacer, para no depender de alguien técnico.
+```gherkin
+Escenario: Rechazo explicado
+  Dado un pedido de un comprador dado de baja
+  Cuando intento validarlo
+  Entonces el sistema responde 422 con un mensaje como "El comprador está dado de baja (inactivo), por eso no se le puede procesar un pedido."
+  Y me dice qué hacer ("Corrige lo indicado y vuelve a intentarlo. El pedido no cambió.")
+  Y el mensaje no contiene nombres técnicos como cliente_activo
+
+Escenario: Paso fuera de orden
+  Dado un pedido recién registrado
+  Cuando intento entregarlo directamente
+  Entonces el sistema responde 409 explicando que antes debe validarse y prepararse
+  Y me dice cuál es el siguiente paso permitido
+
+Escenario: Dato mal escrito
+  Dado una cantidad de 0 o un JSON mal escrito
+  Cuando envío el pedido
+  Entonces el sistema responde 400 en español, sin mensajes en inglés
+
+Escenario: Resultado de la evaluación
+  Dado cualquier pedido
+  Cuando consulto su evaluación
+  Entonces leo en una frase si se puede procesar y si aplica el beneficio, y el porqué de cada caso
 ```
 
 ## 9.6 Brecha y backlog priorizado (lo que el BRD v1 pide y el PIA aún no programa)

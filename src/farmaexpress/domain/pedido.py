@@ -6,7 +6,7 @@ from datetime import date
 
 from . import events as ev
 from .entities import Comprador, Producto
-from .exceptions import ConflictoDeEstado, ReglaDeNegocioIncumplida
+from .exceptions import PedidoNoEditable, ReglaDeNegocioIncumplida
 from .reglas import BENEFICIO_REFERENCIA, PUEDE_PREPARARSE, PUEDE_PROCESARSE, PUEDE_VALIDARSE
 from .specifications import ContextoPedido, Specification
 from .state_machine import MAQUINA_PEDIDO, Accion, EstadoPedido, MaquinaDeEstados
@@ -91,7 +91,7 @@ class Pedido:
     # ------------------------------------------------------------- comandos
     def agregar_linea(self, producto: Producto, cantidad: Cantidad) -> None:
         if self.estado is not EstadoPedido.CREADO:
-            raise ConflictoDeEstado(f"Sólo se editan pedidos CREADO (actual: {self.estado.value})")
+            raise PedidoNoEditable(self.estado.value)
         previa = next((ln for ln in self.lineas if ln.recurso_id == producto.recurso_id), None)
         if previa:
             self.lineas.remove(previa)
